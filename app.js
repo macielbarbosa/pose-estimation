@@ -7,14 +7,6 @@ const app = express()
 const header = require('./header')
 var net
 
-const input = src => {
-  img.src = src
-  const canvas = createCanvas(img.width, img.height)
-  const ctx = canvas.getContext('2d')
-  ctx.drawImage(img, 0, 0)
-  return tf.browser.fromPixels(canvas)
-}
-
 const imageInput = src =>
   new Promise((resolve, reject) => {
     const image = new Image()
@@ -51,7 +43,7 @@ app.get('/header', (request, response) => {
 
 app.get('/estimate', (request, response) => {
   const { url } = request.query
-  console.log('Sending coordernates from ' + url)
+  console.log('Sending coordernates > URL: ' + url)
   estimate(url).then(coordinates => response.send(coordinates))
 })
 
