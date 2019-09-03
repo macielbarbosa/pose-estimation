@@ -48,9 +48,8 @@ app.get('/estimate', (request, response) => {
 })
 
 const initService = async () => {
-  console.log('Iniciando servico')
+  console.log('Starting service...')
   net = await posenet.load()
-
   app.listen(3000, function() {
     console.log('Listening on port 3000!')
   })
