@@ -16,7 +16,7 @@ const imageInput = src =>
       context.drawImage(image, 0, 0)
       resolve(tf.browser.fromPixels(canvas))
     }
-    image.onerror = reject
+    image.onerror = () => reject('Error loading image')
     image.src = src
   })
 
@@ -46,7 +46,10 @@ app.get('/estimate', (request, response) => {
   console.log('Sending pose estimation > URL: ' + url)
   estimate(url)
     .then(coordinates => response.send(coordinates))
-    .catch(_ => response.send(false))
+    .catch(error => {
+      console.error('Error in pose estimation >', error)
+      response.send(false)
+    })
 })
 
 const initService = async () => {
