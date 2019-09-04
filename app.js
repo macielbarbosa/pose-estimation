@@ -36,15 +36,17 @@ const estimate = async url => {
   return coordinates
 }
 
-app.get('/header', (request, response) => {
+app.get('/header', (_, response) => {
   console.log('Sending header')
   response.send(header)
 })
 
 app.get('/estimate', (request, response) => {
   const { url } = request.query
-  console.log('Sending coordernates > URL: ' + url)
-  estimate(url).then(coordinates => response.send(coordinates))
+  console.log('Sending pose estimation > URL: ' + url)
+  estimate(url)
+    .then(coordinates => response.send(coordinates))
+    .catch(_ => response.send(false))
 })
 
 const initService = async () => {
