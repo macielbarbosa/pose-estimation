@@ -1,4 +1,5 @@
 # Pose estimation
+API para obtenção dos pixels das articulações de uma pessoa presente em uma imagem.
 
 Deploy: http://pose-estimation-api.herokuapp.com
 
