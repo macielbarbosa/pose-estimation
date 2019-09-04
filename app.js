@@ -36,6 +36,10 @@ const estimate = async url => {
   return coordinates
 }
 
+app.get('/', (_, response) => {
+  response.send('Pose estimation API')
+})
+
 app.get('/header', (_, response) => {
   console.log('Sending header')
   response.send(header)
