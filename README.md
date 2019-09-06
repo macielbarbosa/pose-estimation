@@ -5,12 +5,13 @@ Deploy: http://poseestimation.herokuapp.com
 
 ### API
 
-| Rota                | Descrição                                                          | Resultado |
-|---------------------|--------------------------------------------------------------------|-----------|
-| `/header`           | Obter o cabeçalho dos dados                                        | Array[String] |
-| `/estimate?url=URL` | Obter as coordenadas das articulações encontradas na imagem da URL | Array[Number] \|\| false<sup>1<sub> |
-  
-1 - A imagem não foi encontrada ou não foi possível identificar os pontos na imagem.
+|Rota                    |Descrição                                                         |body    |Resultado                          |
+|------------------------|------------------------------------------------------------------|--------|-----------------------------------|
+|GET `/header`           |Obter o cabeçalho dos dados                                       | --     | Array[String]                     |
+|GET `/estimate?url=URL` |Obter as coordenadas das articulações encontradas na imagem da URL| --     |Array[Number] \|\| false<sup>1<sub>|
+|POST `/estimate`        | //                                                               | `{ "base64": String}`   | //               |
+
+1 - Erro ao carregar a imagem ou não foi possível identificar os pontos.
 
 ### Instruções para rodar localmente
 
