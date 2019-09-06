@@ -3,6 +3,7 @@ const posenet = require('@tensorflow-models/posenet')
 const { Image, createCanvas } = require('canvas')
 const express = require('express')
 const app = express()
+app.use(express.json())
 
 const header = require('./header')
 var net
@@ -45,10 +46,12 @@ app.get('/header', (_, response) => {
   response.send(header)
 })
 
-app.get('/estimate', (request, response) => {
+app.post('/estimate', (request, response) => {
   const { url } = request.query
-  console.log('Sending pose estimation > URL: ' + url)
-  estimate(url)
+  const { base64 } = request.body
+  const src = base64 || url
+  console.log(`Sending pose estimation > ${url ? 'URL: ' + url : 'BASE64'}`)
+  estimate(src)
     .then(coordinates => response.send(coordinates))
     .catch(error => {
       console.error('Error in pose estimation >', error)
