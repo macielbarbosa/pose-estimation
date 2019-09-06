@@ -1,41 +1,14 @@
-const tf = require('@tensorflow/tfjs-node')
 const posenet = require('@tensorflow-models/posenet')
-const { Image, createCanvas } = require('canvas')
 const express = require('express')
+const bodyParser = require('body-parser')
+
 const app = express()
+app.use(bodyParser.json({ limit: '50mb', type: 'application/json' }))
 app.use(express.json())
 
-const header = require('./header')
-var net
-
-const imageInput = src =>
-  new Promise((resolve, reject) => {
-    const image = new Image()
-    image.onload = () => {
-      const canvas = createCanvas(image.width, image.height)
-      const context = canvas.getContext('2d')
-      context.drawImage(image, 0, 0)
-      resolve(tf.browser.fromPixels(canvas))
-    }
-    image.onerror = () => reject('Error loading image')
-    image.src = src
-  })
-
-const estimate = async url => {
-  const input = await imageInput(url)
-  const estimation = await net.estimateMultiplePoses(input, {
-    flipHorizontal: false,
-    maxDetections: 2,
-    scoreThreshold: 0.6,
-    nmsRadius: 20,
-  })
-  const coordinates = []
-  estimation[0].keypoints.forEach(({ position }) => {
-    const { x, y } = position
-    coordinates.push(x, y)
-  })
-  return coordinates
-}
+const estimate = require('./src/estimate')
+const header = require('./src/header')
+var netEstimate
 
 app.get('/', (_, response) => {
   response.send('Pose estimation API')
@@ -46,22 +19,22 @@ app.get('/header', (_, response) => {
   response.send(header)
 })
 
-app.post('/estimate', (request, response) => {
+app.get('/estimate', (request, response) => {
   const { url } = request.query
+  console.log(`Sending pose estimation > URL: ${url}`)
+  netEstimate(url).then(value => response.send(value))
+})
+
+app.post('/estimate', (request, response) => {
   const { base64 } = request.body
-  const src = base64 || url
-  console.log(`Sending pose estimation > ${url ? 'URL: ' + url : 'BASE64'}`)
-  estimate(src)
-    .then(coordinates => response.send(coordinates))
-    .catch(error => {
-      console.error('Error in pose estimation >', error)
-      response.send(false)
-    })
+  console.log('Sending pose estimation > BASE64')
+  netEstimate(base64).then(value => response.send(value))
 })
 
 const initService = async () => {
   console.log('Starting service...')
-  net = await posenet.load()
+  const net = await posenet.load()
+  netEstimate = estimate(net)
   const port = process.env.PORT || 3000
   app.listen(port, function() {
     console.log(`Listening on port ${port}!`)
